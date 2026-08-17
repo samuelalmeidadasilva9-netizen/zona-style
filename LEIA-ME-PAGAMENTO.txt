@@ -1,0 +1,39 @@
+ZONA STYLE — VERSÃO COM PAGAMENTO PELO SITE
+
+O QUE FOI ADICIONADO
+- Página checkout.html
+- Mercado Pago Payment Brick
+- Pagamento por Pix e cartão (quando habilitados na sua conta)
+- API segura em /api/process_payment.js
+- O preço é recalculado no servidor para evitar alteração pelo navegador
+- O Access Token não fica exposto no site
+
+IMPORTANTE: O SITE NÃO RECEBE PAGAMENTOS REAIS ATÉ VOCÊ CONFIGURAR AS CREDENCIAIS.
+
+ATIVAÇÃO NA VERCEL
+1. Publique esta pasta na Vercel.
+2. Crie uma aplicação no painel de desenvolvedores do Mercado Pago.
+3. Comece usando as CREDENCIAIS DE TESTE.
+4. Copie a PUBLIC KEY de teste.
+5. Abra config.js e substitua:
+   SUA_PUBLIC_KEY_AQUI
+   pela sua Public Key.
+6. Na Vercel:
+   Project > Settings > Environment Variables
+7. Crie a variável:
+   MP_ACCESS_TOKEN
+8. Cole nela o Access Token de TESTE.
+9. Faça novo Deploy.
+10. Faça compras de teste seguindo o ambiente de testes do Mercado Pago.
+11. Só depois dos testes, troque pelas credenciais de PRODUÇÃO.
+
+SEGURANÇA
+- NUNCA escreva seu Access Token no index.html, checkout.html, config.js ou GitHub.
+- O Access Token deve ficar somente nas variáveis de ambiente da Vercel.
+- Não envie seu Access Token por mensagem para ninguém.
+- Configure Webhooks no Mercado Pago antes de tratar o status mostrado no navegador como confirmação definitiva do pedido.
+- Use uma conta de vendedor habilitada e em conformidade com as regras do Mercado Pago. Se a conta exigir responsável legal, faça a configuração com esse responsável.
+
+CATÁLOGO
+Zona Style Shadow — R$ 80,00
+Zona Style Graffiti — R$ 80,00

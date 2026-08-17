@@ -1,0 +1,27 @@
+ZONA STYLE — SITE
+
+COMO ABRIR:
+1. Extraia o arquivo ZIP.
+2. Abra a pasta "zona_style_site".
+3. Dê dois cliques em "index.html".
+4. O site abrirá no navegador.
+
+COMO PUBLICAR GRÁTIS NA VERCEL:
+1. Crie uma conta em vercel.com.
+2. Crie também uma conta no GitHub, se ainda não tiver.
+3. Crie um repositório novo no GitHub e envie todos os arquivos desta pasta.
+4. Na Vercel, clique em "Add New > Project".
+5. Importe o repositório.
+6. Clique em "Deploy".
+7. A Vercel vai gerar um endereço público para sua loja.
+
+PRODUTOS ATUAIS:
+- Zona Style Shadow — R$ 80,00 — P/M/G/GG
+- Zona Style Graffiti — R$ 80,00 — P/M/G/GG
+
+CONTATO:
+WhatsApp: (24) 99902-3408
+Instagram: @labeelrj
+
+IMPORTANTE:
+O carrinho funciona no navegador e envia o pedido para o WhatsApp. Não há cobrança automática de cartão/Pix neste arquivo. Para pagamento automático, estoque real, cálculo de frete e painel administrativo, o ideal é integrar depois com uma plataforma de e-commerce/pagamento.

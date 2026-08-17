@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento — Zona Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .checkout-page{min-height:100vh;background:#050505}
+    .checkout-header{height:76px;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 3vw}
+    .checkout-wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:28px;max-width:1180px;margin:0 auto;padding:42px 24px 70px}
+    .pay-panel,.order-panel{background:#0a0a0a;border:1px solid #252525;padding:26px}
+    .pay-panel h1,.order-panel h2{font-family:Anton,sans-serif;margin:0 0 8px;letter-spacing:.02em}
+    .pay-panel h1{font-size:44px}
+    .pay-panel .intro{color:#999;font-size:13px;line-height:1.7;margin:0 0 24px}
+    .secure-note{border:1px solid #27372d;background:#0b1610;padding:12px 14px;color:#bcd7c5;font-size:12px;margin-bottom:18px}
+    .setup-warning{border:1px solid #694600;background:#211500;padding:14px;color:#ffd38a;font-size:12px;line-height:1.6;margin-bottom:18px;display:none}
+    #paymentBrick_container{min-height:260px}
+    .order-row{display:flex;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid #222;font-size:13px}
+    .order-row small{color:#777}
+    .order-total{display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:17px}
+    .order-total strong{color:#ff075f;font-size:22px}
+    .back-link{font-size:12px;color:#bbb}
+    .payment-result{display:none;border:1px solid #333;margin-top:20px;padding:18px}
+    .payment-result.ok{border-color:#245c36;background:#09140c}
+    .payment-result.pending{border-color:#725715;background:#191407}
+    .payment-result.error{border-color:#67252e;background:#18090b}
+    .pix-box img{width:210px;max-width:100%;background:#fff;padding:8px;display:block;margin:16px auto}
+    .pix-code{width:100%;min-height:84px;background:#050505;border:1px solid #333;color:#ddd;padding:10px;resize:none}
+    .copy-pix{width:100%;border:0;background:#fff;color:#000;font-weight:800;padding:12px;cursor:pointer;margin-top:8px}
+    @media(max-width:850px){.checkout-wrap{grid-template-columns:1fr}.order-panel{order:-1}.pay-panel h1{font-size:36px}}
+  </style>
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="config.js"></script>
+</head>
+<body class="checkout-page">
+  <header class="checkout-header">
+    <a class="brand" href="index.html"><span>ZONA</span><strong>STYLE</strong><b>✦</b></a>
+    <a class="back-link" href="index.html">← VOLTAR PARA A LOJA</a>
+  </header>
+
+  <main class="checkout-wrap">
+    <section class="pay-panel">
+      <p class="eyebrow">CHECKOUT</p>
+      <h1>FINALIZAR PAGAMENTO</h1>
+      <p class="intro">Escolha a forma de pagamento abaixo. Os dados do cartão são capturados pelo componente seguro do Mercado Pago e não ficam salvos neste site.</p>
+
+      <div class="secure-note">🔒 Pagamento processado pelo Mercado Pago.</div>
+      <div id="setup-warning" class="setup-warning">
+        O pagamento ainda não está ativado. Coloque sua Public Key em <b>config.js</b> e configure <b>MP_ACCESS_TOKEN</b> nas variáveis de ambiente da Vercel.
+      </div>
+
+      <div id="paymentBrick_container"></div>
+
+      <div id="payment-result" class="payment-result"></div>
+    </section>
+
+    <aside class="order-panel">
+      <p class="eyebrow">SEU PEDIDO</p>
+      <h2>RESUMO</h2>
+      <div id="order-items"></div>
+      <div class="order-total">
+        <span>TOTAL</span>
+        <strong id="order-total">R$ 0,00</strong>
+      </div>
+    </aside>
+  </main>
+
+<script>
+const PRODUCTS = {
+  "Zona Style Shadow": { price: 80 },
+  "Zona Style Graffiti": { price: 80 }
+};
+
+const cart = JSON.parse(localStorage.getItem("zonaStyleCart") || "[]")
+  .filter(i => PRODUCTS[i.name] && Number(i.qty) > 0)
+  .map(i => ({name:i.name, qty:Math.max(1, Math.floor(Number(i.qty)))}));
+
+const total = cart.reduce((s,i)=>s + PRODUCTS[i.name].price * i.qty, 0);
+document.getElementById("order-items").innerHTML = cart.length
+  ? cart.map(i => `<div class="order-row"><div><b>${i.name}</b><br><small>Quantidade: ${i.qty}</small></div><strong>${(PRODUCTS[i.name].price*i.qty).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</strong></div>`).join("")
+  : '<p style="color:#777">Sua sacola está vazia.</p>';
+document.getElementById("order-total").textContent = total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+const publicKey = window.ZONA_STYLE_MP_PUBLIC_KEY;
+const warning = document.getElementById("setup-warning");
+
+function renderResult(data){
+  const box = document.getElementById("payment-result");
+  box.style.display = "block";
+  const status = data.status || "";
+  const pix = data.point_of_interaction?.transaction_data || {};
+
+  if (pix.qr_code || pix.qr_code_base64) {
+    box.className = "payment-result pending";
+    box.innerHTML = `
+      <h3>PIX GERADO</h3>
+      <p>Escaneie o QR Code ou copie o código Pix.</p>
+      ${pix.qr_code_base64 ? `<div class="pix-box"><img src="data:image/png;base64,${pix.qr_code_base64}" alt="QR Code Pix"></div>` : ""}
+      ${pix.qr_code ? `<textarea id="pix-code" class="pix-code" readonly>${pix.qr_code}</textarea><button class="copy-pix" onclick="copyPix()">COPIAR CÓDIGO PIX</button>` : ""}
+    `;
+  } else if (status === "approved") {
+    box.className = "payment-result ok";
+    box.innerHTML = "<h3>PAGAMENTO APROVADO ✓</h3><p>Seu pagamento foi aprovado. Guarde o número do pagamento: <b>"+(data.id || "")+"</b>.</p>";
+    localStorage.removeItem("zonaStyleCart");
+  } else {
+    box.className = status === "pending" || status === "in_process" ? "payment-result pending" : "payment-result error";
+    box.innerHTML = "<h3>"+(status === "pending" || status === "in_process" ? "PAGAMENTO EM ANÁLISE" : "NÃO FOI POSSÍVEL CONCLUIR")+"</h3><p>Status: <b>"+(status || "não informado")+"</b>. "+(data.status_detail ? "Detalhe: "+data.status_detail : "")+"</p>";
+  }
+  box.scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function copyPix(){
+  const el = document.getElementById("pix-code");
+  el.select();
+  navigator.clipboard.writeText(el.value);
+  const btn = document.querySelector(".copy-pix");
+  btn.textContent = "COPIADO ✓";
+  setTimeout(()=>btn.textContent="COPIAR CÓDIGO PIX", 1500);
+}
+
+async function startPayment(){
+  if (!cart.length || total <= 0) {
+    warning.style.display = "block";
+    warning.textContent = "Sua sacola está vazia. Volte à loja e adicione uma peça.";
+    return;
+  }
+
+  if (!publicKey || publicKey === "SUA_PUBLIC_KEY_AQUI") {
+    warning.style.display = "block";
+    return;
+  }
+
+  try {
+    const mp = new MercadoPago(publicKey, { locale: "pt-BR" });
+    const bricksBuilder = mp.bricks();
+
+    const settings = {
+      initialization: { amount: total },
+      customization: {
+        visual: { style: { theme: "dark" } },
+        paymentMethods: {
+          bankTransfer: "all",
+          creditCard: "all",
+          debitCard: "all"
+        }
+      },
+      callbacks: {
+        onReady: () => {},
+        onSubmit: ({ selectedPaymentMethod, formData }) => {
+          return new Promise((resolve, reject) => {
+            fetch("/api/process_payment", {
+              method: "POST",
+              headers: {"Content-Type":"application/json"},
+              body: JSON.stringify({ formData, cart })
+            })
+            .then(async r => {
+              const data = await r.json();
+              if (!r.ok) throw data;
+              renderResult(data);
+              resolve();
+            })
+            .catch(err => {
+              console.error(err);
+              renderResult({status:"error", status_detail:err?.message || "Erro ao processar pagamento"});
+              reject();
+            });
+          });
+        },
+        onError: (error) => console.error(error)
+      }
+    };
+
+    window.paymentBrickController = await bricksBuilder.create("payment", "paymentBrick_container", settings);
+  } catch (e) {
+    console.error(e);
+    warning.style.display = "block";
+    warning.textContent = "Não foi possível carregar o checkout. Confira as credenciais e tente novamente.";
+  }
+}
+startPayment();
+</script>
+</body>
+</html>

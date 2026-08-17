@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Zona Style — streetwear feito pra quem corre atrás." />
+  <title>Zona Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div>☎ <a href="https://wa.me/5524999023408" target="_blank" rel="noopener">(24) 99902-3408</a></div>
+    <div>FRETE PARA TODO O BRASIL</div>
+    <div>◎ <a href="https://instagram.com/labeelrj" target="_blank" rel="noopener">@labeelrj</a></div>
+  </div>
+
+  <header class="header">
+    <a class="brand" href="#inicio" aria-label="Zona Style">
+      <span>ZONA</span><strong>STYLE</strong><b>✦</b>
+    </a>
+
+    <button class="menu-btn" aria-label="Abrir menu" onclick="toggleMenu()">☰</button>
+
+    <nav id="nav">
+      <a href="#inicio">INÍCIO</a>
+      <a href="#produtos">PRODUTOS</a>
+      <a href="#lancamentos">LANÇAMENTOS</a>
+      <a href="#sobre">SOBRE</a>
+      <a href="#contato">CONTATO</a>
+    </nav>
+
+    <button class="cart-btn" onclick="toggleCart()">
+      SACOLA <span id="cart-count">0</span>
+    </button>
+  </header>
+
+  <main>
+    <section id="inicio" class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">ZONA STYLE / STREETWEAR</p>
+        <h1>NÃO É<br>SÓ ROUPA.<br>É <em>ESTILO</em><br>DE VIDA.</h1>
+        <p class="sub">Criado na rua, pensado pra vencer.<br>Vista sua essência. Viva seu corre.</p>
+        <a class="btn primary" href="#produtos">VER COLEÇÃO →</a>
+      </div>
+
+      <div class="hero-art">
+        <div class="paint paint-1"></div>
+        <div class="paint paint-2"></div>
+        <img src="zona-style-shadow.png" alt="Camiseta Zona Style Shadow" />
+        <div class="stamp">ZONA<br><span>STYLE</span></div>
+      </div>
+
+      <aside class="hero-side">
+        <p class="side-label">CONTATO</p>
+        <a href="https://wa.me/5524999023408" target="_blank" rel="noopener">WhatsApp<br><strong>(24) 99902-3408</strong></a>
+        <a href="https://instagram.com/labeelrj" target="_blank" rel="noopener">Instagram<br><strong>@labeelrj</strong></a>
+        <div class="divider"></div>
+        <p class="side-label">ZONA STYLE</p>
+        <p>Mais que uma marca, um movimento. Pra quem nasceu na luta e escolheu transformar o corre em história.</p>
+        <a class="btn outline" href="#sobre">NOSSO MANIFESTO</a>
+      </aside>
+    </section>
+
+    <section class="benefits">
+      <div><b>🚚 FRETE</b><span>Envio para todo o Brasil</span></div>
+      <div><b>🔒 COMPRA SEGURA</b><span>Pagamento integrado ao site</span></div>
+      <div><b>📦 TROCA FÁCIL</b><span>Consulte nossa política</span></div>
+      <div><b>💳 PAGAMENTO</b><span>Pix e cartão</span></div>
+    </section>
+
+    <section id="produtos" class="products-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">DROP 01</p>
+          <h2>DESTAQUES</h2>
+        </div>
+        <span>2 PEÇAS</span>
+      </div>
+
+      <div class="product-grid">
+        <article class="product-card">
+          <div class="product-image">
+            <span class="tag">LANÇAMENTO</span>
+            <img src="zona-style-shadow.png" alt="Zona Style Shadow" />
+          </div>
+          <div class="product-info">
+            <h3>ZONA STYLE SHADOW</h3>
+            <p class="price">R$ 80,00</p>
+            <div class="sizes" aria-label="Tamanhos disponíveis">
+              <span>P</span><span>M</span><span>G</span><span>GG</span>
+            </div>
+            <button onclick="addToCart('Zona Style Shadow', 80)">ADICIONAR À SACOLA</button>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-image">
+            <span class="tag">NOVO</span>
+            <img src="zona-style-graffiti.png" alt="Zona Style Graffiti" />
+          </div>
+          <div class="product-info">
+            <h3>ZONA STYLE GRAFFITI</h3>
+            <p class="price">R$ 80,00</p>
+            <div class="sizes" aria-label="Tamanhos disponíveis">
+              <span>P</span><span>M</span><span>G</span><span>GG</span>
+            </div>
+            <button onclick="addToCart('Zona Style Graffiti', 80)">ADICIONAR À SACOLA</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="lancamentos" class="banner">
+      <div>
+        <p class="eyebrow">LANÇAMENTOS</p>
+        <h2>VISTA QUEM<br>VOCÊ É.</h2>
+        <p>Mostre de onde veio e pra onde vai.</p>
+        <a class="btn primary" href="#produtos">VER DROP</a>
+      </div>
+      <div class="banner-type">ZONA<br><span>STYLE</span></div>
+    </section>
+
+    <section id="sobre" class="about">
+      <p class="eyebrow">MANIFESTO</p>
+      <h2>FEITO PRA QUEM<br>NÃO PARA NO LIMITE.</h2>
+      <p>A Zona Style nasce com uma ideia simples: roupa também conta história. Cada peça carrega atitude, identidade e a vontade de ir além.</p>
+    </section>
+
+    <section id="contato" class="contact">
+      <div>
+        <p class="eyebrow">FALE COM A ZONA</p>
+        <h2>CURTIU UMA PEÇA?</h2>
+        <p>Chama no WhatsApp para confirmar tamanho, estoque, pagamento e entrega.</p>
+      </div>
+      <a class="btn primary" href="https://wa.me/5524999023408?text=Oi%20Zona%20Style!%20Quero%20saber%20mais%20sobre%20as%20pe%C3%A7as." target="_blank" rel="noopener">CHAMAR NO WHATSAPP</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand footer-brand"><span>ZONA</span><strong>STYLE</strong><b>✦</b></div>
+    <p>© 2026 Zona Style. Todos os direitos reservados.</p>
+    <a href="https://instagram.com/labeelrj" target="_blank" rel="noopener">@labeelrj</a>
+  </footer>
+
+  <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+  <aside id="cart" class="cart">
+    <div class="cart-head">
+      <h2>SUA SACOLA</h2>
+      <button onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cart-items" class="cart-items">
+      <p class="empty">Sua sacola está vazia.</p>
+    </div>
+    <div class="cart-foot">
+      <div class="total"><span>TOTAL</span><strong id="cart-total">R$ 0,00</strong></div>
+      <button class="checkout" onclick="goToCheckout()">PAGAR PELO SITE</button>
+      <small>Pagamento seguro integrado ao Mercado Pago. Ative as credenciais antes de publicar.</small>
+    </div>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
