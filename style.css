@@ -19,3 +19,17 @@
   border-color: #ff075f;
   color: white;
 }
+.product-info > button {
+  width: 100%;
+  border: 0;
+  background: #ffffff;
+  color: #050505;
+  padding: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.product-info > button:hover {
+  background: #ffffff;
+  color: #050505;
+}
