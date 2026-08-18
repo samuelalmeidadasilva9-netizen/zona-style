@@ -5,16 +5,44 @@ function saveCart(){
   renderCart();
 }
 
-function addToCart(name, price){
-  const existing = cart.find(i => i.name === name);
-  if(existing) existing.qty += 1;
-  else cart.push({name, price, qty:1});
+function selectSize(button){
+  const group = button.closest(".sizes");
+  group.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+  button.classList.add("selected");
+}
+
+function addSelectedToCart(name, price, addButton){
+  const card = addButton.closest(".product-card");
+  const selected = card.querySelector(".sizes button.selected");
+
+  if(!selected){
+    showToast("Escolha um tamanho primeiro.");
+    return;
+  }
+
+  addToCart(name, price, selected.textContent.trim());
+}
+
+function addToCart(name, price, size){
+  const existing = cart.find(i => i.name === name && i.size === size);
+
+  if(existing){
+    existing.qty += 1;
+  } else {
+    cart.push({
+      name: name,
+      price: price,
+      size: size,
+      qty: 1
+    });
+  }
+
   saveCart();
   showToast("Peça adicionada à sacola!");
 }
 
-function removeItem(name){
-  cart = cart.filter(i => i.name !== name);
+function removeItem(name, size){
+  cart = cart.filter(i => !(i.name === name && i.size === size));
   saveCart();
 }
 
@@ -32,11 +60,11 @@ function renderCart(){
     <div class="cart-item">
       <div>
         <b>${i.name}</b><br>
-        <small>Qtd: ${i.qty}</small>
+        <small>Tamanho: ${i.size} • Qtd: ${i.qty}</small>
       </div>
       <div>
         <span>${(i.price*i.qty).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span><br>
-        <button onclick="removeItem('${i.name.replace(/'/g,"\\'")}')">remover</button>
+        <button onclick="removeItem('${i.name.replace(/'/g,"\\'")}','${i.size}')">remover</button>
       </div>
     </div>
   `).join("");
