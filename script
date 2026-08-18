@@ -1,32 +1,38 @@
-let cart = JSON.parse(localStorage.getItem("zonaStyleCart") || "[]");
+let cart = JSON.parse(localStorage.getItem("zonaStyleCart")) || [];
 
-function saveCart(){
+function saveCart() {
   localStorage.setItem("zonaStyleCart", JSON.stringify(cart));
   renderCart();
 }
 
-function selectSize(button){
-  const group = button.closest(".sizes");
-  group.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+function selectSize(button) {
+  const sizes = button.closest(".sizes");
+
+  sizes.querySelectorAll("button").forEach(btn => {
+    btn.classList.remove("selected");
+  });
+
   button.classList.add("selected");
 }
 
-function addSelectedToCart(name, price, addButton){
-  const card = addButton.closest(".product-card");
-  const selected = card.querySelector(".sizes button.selected");
+function addSelectedToCart(name, price, button) {
+  const card = button.closest(".product-card");
+  const selectedSize = card.querySelector(".sizes button.selected");
 
-  if(!selected){
+  if (!selectedSize) {
     showToast("Escolha um tamanho primeiro.");
     return;
   }
 
-  addToCart(name, price, selected.textContent.trim());
+  addToCart(name, price, selectedSize.textContent.trim());
 }
 
-function addToCart(name, price, size){
-  const existing = cart.find(i => i.name === name && i.size === size);
+function addToCart(name, price, size) {
+  const existing = cart.find(item =>
+    item.name === name && item.size === size
+  );
 
-  if(existing){
+  if (existing) {
     existing.qty += 1;
   } else {
     cart.push({
@@ -41,69 +47,124 @@ function addToCart(name, price, size){
   showToast("Peça adicionada à sacola!");
 }
 
-function removeItem(name, size){
-  cart = cart.filter(i => !(i.name === name && i.size === size));
+function removeItem(name, size) {
+  cart = cart.filter(item =>
+    !(item.name === name && item.size === size)
+  );
+
   saveCart();
 }
 
-function renderCart(){
-  const count = cart.reduce((s,i)=>s+i.qty,0);
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  document.getElementById("cart-count").textContent = count;
-  document.getElementById("cart-total").textContent = total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function renderCart() {
+  const count = cart.reduce((total, item) => total + item.qty, 0);
+  const total = cart.reduce(
+    (total, item) => total + item.price * item.qty,
+    0
+  );
+
+  const countElement = document.getElementById("cart-count");
+  const totalElement = document.getElementById("cart-total");
   const box = document.getElementById("cart-items");
-  if(!cart.length){
+
+  if (countElement) {
+    countElement.textContent = count;
+  }
+
+  if (totalElement) {
+    totalElement.textContent = total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+  if (!box) return;
+
+  if (!cart.length) {
     box.innerHTML = '<p class="empty">Sua sacola está vazia.</p>';
     return;
   }
-  box.innerHTML = cart.map(i => `
+
+  box.innerHTML = cart.map(item => `
     <div class="cart-item">
       <div>
-        <b>${i.name}</b><br>
-        <small>Tamanho: ${i.size} • Qtd: ${i.qty}</small>
+        <b>${item.name}</b><br>
+        <small>Tamanho: ${item.size} • Qtd: ${item.qty}</small>
       </div>
+
       <div>
-        <span>${(i.price*i.qty).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span><br>
-        <button onclick="removeItem('${i.name.replace(/'/g,"\\'")}','${i.size}')">remover</button>
+        <span>
+          ${(item.price * item.qty).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+          })}
+        </span>
+        <br>
+
+        <button onclick="removeItem('${item.name.replace(/'/g, "\\'")}', '${item.size}')">
+          remover
+        </button>
       </div>
     </div>
   `).join("");
 }
 
-function toggleCart(){
-  document.getElementById("cart").classList.toggle("open");
-  document.getElementById("cart-overlay").classList.toggle("open");
-}
+function toggleCart() {
+  const cartElement = document.getElementById("cart");
+  const overlay = document.getElementById("cart-overlay");
 
-function toggleMenu(){
-  document.getElementById("nav").classList.toggle("open");
-}
-
-function checkoutWhatsApp(){
-  if(!cart.length){ showToast("Sua sacola está vazia."); return; }
-  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const lines = cart.map(i => `• ${i.name} — ${i.qty}x R$ ${i.price.toFixed(2).replace(".",",")}`);
-  const msg = `Oi Zona Style! Quero fazer este pedido:\n\n${lines.join("\n")}\n\nTotal: ${total.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}\n\nQuero confirmar tamanho, estoque e entrega.`;
-  window.open("https://wa.me/5524999023408?text="+encodeURIComponent(msg), "_blank");
-}
-
-function showToast(text){
-  let t = document.querySelector(".toast");
-  if(!t){
-    t = document.createElement("div");
-    t.className = "toast";
-    document.body.appendChild(t);
+  if (cartElement) {
+    cartElement.classList.toggle("open");
   }
-  t.textContent = text;
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 1800);
+
+  if (overlay) {
+    overlay.classList.toggle("open");
+  }
 }
 
-document.querySelectorAll("#nav a").forEach(a=>a.addEventListener("click",()=>document.getElementById("nav").classList.remove("open")));
-renderCart();
+function toggleMenu() {
+  const nav = document.getElementById("nav");
 
-function goToCheckout(){
-  if(!cart.length){ showToast("Sua sacola está vazia."); return; }
-  localStorage.setItem("zonaStyleCart", JSON.stringify(cart));
+  if (nav) {
+    nav.classList.toggle("open");
+  }
+}
+
+function showToast(message) {
+  let toast = document.getElementById("toast");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "25px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#ff075f";
+    toast.style.color = "#fff";
+    toast.style.padding = "12px 20px";
+    toast.style.zIndex = "99999";
+    toast.style.fontWeight = "bold";
+
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.style.display = "block";
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2000);
+}
+
+function goToCheckout() {
+  if (!cart.length) {
+    showToast("Sua sacola está vazia.");
+    return;
+  }
+
   window.location.href = "checkout.html";
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderCart();
+});
